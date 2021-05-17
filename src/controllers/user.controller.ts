@@ -49,7 +49,7 @@ export class UserController {
   async signup(@requestBody() userData: User) {
     validateCredentials(_.pick(userData, ['email', 'password']));
 
-    userData.permissions = [PermissionKeys.AccessAuthFeature];
+    // userData.permissions = [PermissionKeys.AccessAuthFeature];
 
     userData.password = await this.hasher.hashPassword(userData.password);
     const savedUser = await this.userRepository.create(userData);

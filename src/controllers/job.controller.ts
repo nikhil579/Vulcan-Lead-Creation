@@ -115,7 +115,7 @@ export class JobController {
     },
   })
   @authenticate('jwt', {required: [PermissionKeys.DeleteJob]})
-  async deleteById(@param.path.number('id') id: number): Promise<void> {
+  async deleteById(@param.path.string('id') id: string): Promise<void> {
     await this.jobRepository.deleteById(id);
   }
 }
