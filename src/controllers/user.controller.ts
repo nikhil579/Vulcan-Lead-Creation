@@ -51,7 +51,7 @@ export class UserController {
 
     userData.password = await this.hasher.hashPassword(userData.password);
     const savedUser = await this.userRepository.create(userData);
-    delete savedUser.password;
+    // delete savedUser.password;
     return savedUser;
   }
 
