@@ -2,11 +2,9 @@ import {authenticate} from '@loopback/authentication';
 import {OPERATION_SECURITY_SPEC} from '@loopback/authentication-jwt';
 import {intercept} from '@loopback/context';
 import {
-  Count,
   CountSchema,
   Filter,
-  repository,
-  Where
+  repository
 } from '@loopback/repository';
 import {
   del,
@@ -82,7 +80,7 @@ export class LeadController {
   // admin should be authenticated
   // only admin can access this route
   // Please run x and y function before this (using interceptor)
-  @patch('/leads', {
+  @patch('/leads/{id}', {
     security: OPERATION_SECURITY_SPEC,
     responses: {
       '200': {
@@ -92,18 +90,19 @@ export class LeadController {
     },
   })
   @authenticate('jwt')
-  async updateAll(
+  async updateById(
+    @param.path.string('id') id: string,
     @requestBody({
       content: {
         'application/json': {
           schema: getModelSchemaRef(Lead, {partial: true}),
+          exclude: ['id', 'createdBy', 'modifiedBy'],
         },
       },
     })
     lead: Lead,
-    @param.where(Lead) where?: Where<Lead>,
-  ): Promise<Count> {
-    return this.leadRepository.updateAll(lead, where);
+  ): Promise<void> {
+    await this.leadRepository.updateById(id, lead);
   }
 
   // admin should be authenticated
@@ -123,9 +122,6 @@ export class LeadController {
   }
 
 
-  postLead(param: any) {
-    console.log(param);
-  }
 }
 
 
