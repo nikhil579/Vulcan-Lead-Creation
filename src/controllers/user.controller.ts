@@ -47,9 +47,8 @@ export class UserController {
     },
   })
   async signup(@requestBody() userData: User) {
-    validateCredentials(_.pick(userData, ['email', 'password']));
+    validateCredentials(_.pick(userData, ['email', 'password', 'permissions']));
 
-    // userData.permissions = [PermissionKeys.AccessAuthFeature];
 
     userData.password = await this.hasher.hashPassword(userData.password);
     const savedUser = await this.userRepository.create(userData);
@@ -90,7 +89,7 @@ export class UserController {
     return Promise.resolve({token: token});
   }
 
-  @authenticate('jwt', {required: [PermissionKeys.AccessAuthFeature]})
+  @authenticate('jwt', {required: [PermissionKeys.Admin]})
   @get('/users/me', {
     security: OPERATION_SECURITY_SPEC,
     responses: {

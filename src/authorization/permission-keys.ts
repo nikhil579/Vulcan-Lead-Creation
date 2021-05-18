@@ -1,9 +1,7 @@
-export const enum PermissionKeys {
-  // admin
-  CreateJob = 'CreateJob',
-  UpdateJob = 'UpdateJob',
-  DeleteJob = 'DeleteJob',
-
-  // normal authenticated user
-  AccessAuthFeature = 'AccessAuthFeature',
+export enum PermissionKeys {
+  //new added roles
+  Admin = 'Admin',
+  Manager = 'Manager',
+  Concierge = 'Concierge',
+  Broker = 'Broker',
 }

@@ -38,7 +38,7 @@ export class JobController {
       },
     },
   })
-  @authenticate('jwt', {required: [PermissionKeys.CreateJob]})
+  @authenticate('jwt', {required: [PermissionKeys.Admin]})
   async create(
     @requestBody({
       content: {
@@ -71,7 +71,7 @@ export class JobController {
       },
     },
   })
-  @authenticate('jwt', {required: [PermissionKeys.AccessAuthFeature]})
+  @authenticate('jwt', {required: [PermissionKeys.Admin]})
   async find(@param.filter(Job) filter?: Filter<Job>): Promise<Job[]> {
     return this.jobRepository.find(filter);
   }
@@ -88,7 +88,7 @@ export class JobController {
       },
     },
   })
-  @authenticate('jwt', {required: [PermissionKeys.UpdateJob]})
+  @authenticate('jwt', {required: [PermissionKeys.Admin]})
   async updateAll(
     @requestBody({
       content: {
@@ -114,7 +114,7 @@ export class JobController {
       },
     },
   })
-  @authenticate('jwt', {required: [PermissionKeys.DeleteJob]})
+  @authenticate('jwt', {required: [PermissionKeys.Admin]})
   async deleteById(@param.path.string('id') id: string): Promise<void> {
     await this.jobRepository.deleteById(id);
   }
