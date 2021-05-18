@@ -41,7 +41,7 @@ export class User extends Entity {
   })
   permissions: string[];
 
-  @hasMany(() => Lead)
+  @hasMany(() => Lead, {keyTo: 'createdBy'})
   leads: Lead[];
 
   constructor(data?: Partial<User>) {

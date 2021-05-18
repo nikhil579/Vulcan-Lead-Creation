@@ -16,7 +16,6 @@ import {
   post,
   requestBody
 } from '@loopback/rest';
-import {PermissionKeys} from '../authorization/permission-keys';
 import {Lead} from '../models';
 import {LeadRepository} from '../repositories';
 
@@ -30,6 +29,7 @@ export class LeadController {
   // only admin can access this route
   // Please run x and y function before this (using interceptor)
   @post('/leads', {
+
     security: OPERATION_SECURITY_SPEC,
     responses: {
       '200': {
@@ -38,7 +38,7 @@ export class LeadController {
       },
     },
   })
-  @authenticate('jwt', {required: [PermissionKeys.Admin]})
+  @authenticate('jwt')
   async create(
     @requestBody({
       content: {
@@ -71,7 +71,7 @@ export class LeadController {
       },
     },
   })
-  @authenticate('jwt', {required: [PermissionKeys.Admin]})
+  @authenticate('jwt')
   async find(@param.filter(Lead) filter?: Filter<Lead>): Promise<Lead[]> {
     return this.leadRepository.find(filter);
   }
@@ -88,7 +88,7 @@ export class LeadController {
       },
     },
   })
-  @authenticate('jwt', {required: [PermissionKeys.Admin]})
+  @authenticate('jwt')
   async updateAll(
     @requestBody({
       content: {
@@ -114,7 +114,7 @@ export class LeadController {
       },
     },
   })
-  @authenticate('jwt', {required: [PermissionKeys.Admin]})
+  @authenticate('jwt')
   async deleteById(@param.path.string('id') id: string): Promise<void> {
     await this.leadRepository.deleteById(id);
   }

@@ -4,7 +4,6 @@ import {repository} from '@loopback/repository';
 import {get, getJsonSchemaRef, post, requestBody} from '@loopback/rest';
 import {UserProfile} from '@loopback/security';
 import * as _ from 'lodash';
-import {PermissionKeys} from '../authorization/permission-keys';
 import {
   PasswordHasherBindings,
   TokenServiceBindings,
@@ -89,7 +88,7 @@ export class UserController {
     return Promise.resolve({token: token});
   }
 
-  @authenticate('jwt', {required: [PermissionKeys.Admin]})
+  @authenticate('jwt')
   @get('/users/me', {
     security: OPERATION_SECURITY_SPEC,
     responses: {
