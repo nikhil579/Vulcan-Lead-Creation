@@ -12,7 +12,6 @@ import {
   Provider,
   ValueOrPromise
 } from '@loopback/context';
-import {HttpErrors} from '@loopback/rest';
 import {intersection} from 'lodash';
 import {MyUserProfile, RequiredPermissions} from '../types';
 
@@ -67,15 +66,15 @@ export class AuthorizeInterceptor implements Provider<Interceptor> {
 
       console.log('User Permissions:', user.permissions);
       const results = intersection(
-        user.permissions,
-        requriedPermissions.required,
+        user.permissions
+        // requriedPermissions.required,
       ).length;
-      if (
-        requriedPermissions.required !== undefined &&
-        results !== requriedPermissions.required.length
-      ) {
-        throw new HttpErrors.Forbidden('INVALID ACCESS');
-      }
+      // if (
+      //   requriedPermissions.required !== undefined &&
+      //   results !== requriedPermissions.required.length
+      // ) {
+      //   throw new HttpErrors.Forbidden('INVALID ACCESS');
+      // }
 
       const result = await next();
       // Add post-invocation logic here

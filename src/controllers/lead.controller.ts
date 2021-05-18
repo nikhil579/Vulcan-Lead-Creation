@@ -1,5 +1,6 @@
 import {authenticate} from '@loopback/authentication';
 import {OPERATION_SECURITY_SPEC} from '@loopback/authentication-jwt';
+import {intercept} from '@loopback/context';
 import {
   Count,
   CountSchema,
@@ -16,6 +17,7 @@ import {
   post,
   requestBody
 } from '@loopback/rest';
+import {LeadInterceptorInterceptor} from '../interceptors';
 import {Lead} from '../models';
 import {LeadRepository} from '../repositories';
 
@@ -28,6 +30,7 @@ export class LeadController {
   // admin should be authenticated
   // only admin can access this route
   // Please run x and y function before this (using interceptor)
+  @intercept(LeadInterceptorInterceptor.BINDING_KEY)
   @post('/leads', {
     security: OPERATION_SECURITY_SPEC,
     responses: {
