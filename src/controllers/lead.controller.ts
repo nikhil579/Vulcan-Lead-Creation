@@ -57,6 +57,7 @@ export class LeadController {
     return this.leadRepository.create(lead);
   }
 
+  @intercept(LeadInterceptorInterceptor.BINDING_KEY)
   @get('/leads', {
     security: OPERATION_SECURITY_SPEC,
     responses: {

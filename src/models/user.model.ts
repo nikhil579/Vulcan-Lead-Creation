@@ -1,4 +1,4 @@
-import {Entity, model, property, hasMany} from '@loopback/repository';
+import {Entity, hasMany, model, property} from '@loopback/repository';
 import {Lead} from './lead.model';
 
 @model()
@@ -43,6 +43,12 @@ export class User extends Entity {
 
   @hasMany(() => Lead, {keyTo: 'createdBy'})
   leads: Lead[];
+
+  @property({
+    type: 'array',
+    itemType: 'string',
+  })
+  memberList: string[];
 
   constructor(data?: Partial<User>) {
     super(data);

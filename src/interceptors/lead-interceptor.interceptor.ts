@@ -13,7 +13,7 @@ import {
 } from '@loopback/core';
 import {repository} from '@loopback/repository';
 import {HttpErrors} from '@loopback/rest';
-import {LeadRepository} from "../repositories";
+import {LeadRepository, UserRepository} from "../repositories";
 import {MyUserProfile} from '../types';
 /**
  * This class will be bound to the application as an `Interceptor` during
@@ -27,7 +27,8 @@ export class LeadInterceptorInterceptor implements Provider<Interceptor> {
   constructor(
     @repository(LeadRepository)
     public leadRepository: LeadRepository,
-
+    @repository(UserRepository)
+    public userRepository: UserRepository,
     // dependency inject
     @inject.getter(AuthenticationBindings.CURRENT_USER)
     public getCurrentUser: Getter<MyUserProfile>
@@ -54,10 +55,12 @@ export class LeadInterceptorInterceptor implements Provider<Interceptor> {
     next: () => ValueOrPromise<InvocationResult>,
   ) {
     try {
-      console.log(invocationCtx.args);
+      console.log(invocationCtx.args[0]);
       // Add pre-invocation logic here
+      console.log(invocationCtx.methodName);
       if (invocationCtx.methodName === 'create') {
         const user = await this.getCurrentUser();
+        console.log(invocationCtx.args[0]);
         const {title} = invocationCtx.args[0];
 
         console.log(title);
@@ -67,6 +70,27 @@ export class LeadInterceptorInterceptor implements Provider<Interceptor> {
           throw new HttpErrors.UnprocessableEntity(
             'Title already exist',
           );
+        }
+      }
+      if (invocationCtx.methodName === 'find') {
+        console.log("GET");
+        console.log(invocationCtx.args[0]);
+        const user = await this.getCurrentUser();
+        const userRecord = await this.userRepository.find({where: {id: user.id}});
+        var filter: any = {};
+        console.log(userRecord);
+        if (userRecord[0].memberList.length == 1) {
+          invocationCtx.args[0].where.createdBy = user.id;
+          console.log("Where", invocationCtx.args[0].where);
+        }
+        if (userRecord[0].memberList.length > 1) {
+          filter.or = [];
+          userRecord[0].memberList.forEach(element => {
+            filter.or.push({createdBy: element});
+          });
+          invocationCtx.args[0].where = filter;
+          console.log(filter);
+          console.log("Where", invocationCtx.args[0].where);
         }
       }
       const result = await next();
