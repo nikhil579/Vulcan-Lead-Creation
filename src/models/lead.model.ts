@@ -15,6 +15,11 @@ export class Lead extends Entity {
   })
   title: string;
 
+  @property({
+    type: 'string',
+  })
+  userId?: string;
+
   constructor(data?: Partial<Lead>) {
     super(data);
   }
