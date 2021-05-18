@@ -3,7 +3,7 @@ import {
   CountSchema,
   Filter,
   repository,
-  Where,
+  Where
 } from '@loopback/repository';
 import {
   del,
@@ -13,11 +13,10 @@ import {
   param,
   patch,
   post,
-  requestBody,
+  requestBody
 } from '@loopback/rest';
 import {
-  User,
-  Lead,
+  Lead, User
 } from '../models';
 import {UserRepository} from '../repositories';
 
@@ -61,7 +60,7 @@ export class UserLeadController {
           schema: getModelSchemaRef(Lead, {
             title: 'NewLeadInUser',
             exclude: ['id'],
-            optional: ['userId']
+            optional: ['createdBy']
           }),
         },
       },

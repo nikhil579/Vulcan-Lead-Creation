@@ -18,7 +18,7 @@ export class Lead extends Entity {
   @property({
     type: 'string',
   })
-  userId?: string;
+  createdBy?: string;
 
   constructor(data?: Partial<Lead>) {
     super(data);
