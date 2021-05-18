@@ -29,7 +29,6 @@ export class LeadController {
   // only admin can access this route
   // Please run x and y function before this (using interceptor)
   @post('/leads', {
-
     security: OPERATION_SECURITY_SPEC,
     responses: {
       '200': {
@@ -45,7 +44,7 @@ export class LeadController {
         'application/json': {
           schema: getModelSchemaRef(Lead, {
             title: 'NewLead',
-            exclude: ['id'],
+            exclude: ['id', 'modifiedBy'],
           }),
         },
       },
@@ -118,4 +117,11 @@ export class LeadController {
   async deleteById(@param.path.string('id') id: string): Promise<void> {
     await this.leadRepository.deleteById(id);
   }
+
+
+  postLead(param: any) {
+    console.log(param);
+  }
 }
+
+

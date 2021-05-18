@@ -1,6 +1,6 @@
 import {
   AuthenticationBindings,
-  AuthenticationMetadata,
+  AuthenticationMetadata
 } from '@loopback/authentication';
 import {
   Getter,
@@ -10,7 +10,7 @@ import {
   InvocationContext,
   InvocationResult,
   Provider,
-  ValueOrPromise,
+  ValueOrPromise
 } from '@loopback/context';
 import {HttpErrors} from '@loopback/rest';
 import {intersection} from 'lodash';
@@ -29,7 +29,7 @@ export class AuthorizeInterceptor implements Provider<Interceptor> {
     // dependency inject
     @inject.getter(AuthenticationBindings.CURRENT_USER)
     public getCurrentUser: Getter<MyUserProfile>,
-  ) {}
+  ) { }
 
   /**
    * This method is used by LoopBack context to produce an interceptor function
@@ -54,18 +54,18 @@ export class AuthorizeInterceptor implements Provider<Interceptor> {
     try {
       // Add pre-invocation logic here
 
-      // console.log('Log from authorize global interceptor')
-      // console.log(this.metadata);
+      console.log('Log from authorize global interceptor')
+      console.log(this.metadata);
 
       // if you not provide options in your @authenticate decorator
       if (!this.metadata) return next();
 
       const requriedPermissions = this.metadata.options as RequiredPermissions;
 
-      // console.log(requriedPermissions);
+      console.log(requriedPermissions);
       const user = await this.getCurrentUser();
 
-      //console.log('User Permissions:', user.permissions);
+      console.log('User Permissions:', user.permissions);
       const results = intersection(
         user.permissions,
         requriedPermissions.required,
