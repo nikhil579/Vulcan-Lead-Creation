@@ -20,6 +20,11 @@ export class Lead extends Entity {
   })
   createdBy?: string;
 
+  @property({
+    type: 'string',
+  })
+  modifiedBy?: string;
+
   constructor(data?: Partial<Lead>) {
     super(data);
   }
