@@ -17,24 +17,24 @@ import {
   requestBody
 } from '@loopback/rest';
 import {PermissionKeys} from '../authorization/permission-keys';
-import {Job} from '../models';
-import {JobRepository} from '../repositories';
+import {Lead} from '../models';
+import {LeadRepository} from '../repositories';
 
-export class JobController {
+export class LeadController {
   constructor(
-    @repository(JobRepository)
-    public jobRepository: JobRepository,
+    @repository(LeadRepository)
+    public leadRepository: LeadRepository,
   ) { }
 
   // admin should be authenticated
   // only admin can access this route
   // Please run x and y function before this (using interceptor)
-  @post('/jobs', {
+  @post('/leads', {
     security: OPERATION_SECURITY_SPEC,
     responses: {
       '200': {
-        description: 'Job model instance',
-        content: {'application/json': {schema: getModelSchemaRef(Job)}},
+        description: 'Lead model instance',
+        content: {'application/json': {schema: getModelSchemaRef(Lead)}},
       },
     },
   })
@@ -43,28 +43,28 @@ export class JobController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Job, {
-            title: 'NewJob',
+          schema: getModelSchemaRef(Lead, {
+            title: 'NewLead',
             exclude: ['id'],
           }),
         },
       },
     })
-    job: Omit<Job, 'id'>,
-  ): Promise<Job> {
-    return this.jobRepository.create(job);
+    lead: Omit<Lead, 'id'>,
+  ): Promise<Lead> {
+    return this.leadRepository.create(lead);
   }
 
-  @get('/jobs', {
+  @get('/leads', {
     security: OPERATION_SECURITY_SPEC,
     responses: {
       '200': {
-        description: 'Array of Job model instances',
+        description: 'Array of Lead model instances',
         content: {
           'application/json': {
             schema: {
               type: 'array',
-              items: getModelSchemaRef(Job, {includeRelations: true}),
+              items: getModelSchemaRef(Lead, {includeRelations: true}),
             },
           },
         },
@@ -72,18 +72,18 @@ export class JobController {
     },
   })
   @authenticate('jwt', {required: [PermissionKeys.Admin]})
-  async find(@param.filter(Job) filter?: Filter<Job>): Promise<Job[]> {
-    return this.jobRepository.find(filter);
+  async find(@param.filter(Lead) filter?: Filter<Lead>): Promise<Lead[]> {
+    return this.leadRepository.find(filter);
   }
 
   // admin should be authenticated
   // only admin can access this route
   // Please run x and y function before this (using interceptor)
-  @patch('/jobs', {
+  @patch('/leads', {
     security: OPERATION_SECURITY_SPEC,
     responses: {
       '200': {
-        description: 'Job PATCH success count',
+        description: 'Lead PATCH success count',
         content: {'application/json': {schema: CountSchema}},
       },
     },
@@ -93,29 +93,29 @@ export class JobController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Job, {partial: true}),
+          schema: getModelSchemaRef(Lead, {partial: true}),
         },
       },
     })
-    job: Job,
-    @param.where(Job) where?: Where<Job>,
+    lead: Lead,
+    @param.where(Lead) where?: Where<Lead>,
   ): Promise<Count> {
-    return this.jobRepository.updateAll(job, where);
+    return this.leadRepository.updateAll(lead, where);
   }
 
   // admin should be authenticated
   // only admin can access this route
   // Please run x and y function before this (using interceptor)
-  @del('/jobs/{id}', {
+  @del('/leads/{id}', {
     security: OPERATION_SECURITY_SPEC,
     responses: {
       '204': {
-        description: 'Job DELETE success',
+        description: 'Lead DELETE success',
       },
     },
   })
   @authenticate('jwt', {required: [PermissionKeys.Admin]})
   async deleteById(@param.path.string('id') id: string): Promise<void> {
-    await this.jobRepository.deleteById(id);
+    await this.leadRepository.deleteById(id);
   }
 }

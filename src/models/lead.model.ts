@@ -1,7 +1,7 @@
 import {Entity, model, property} from '@loopback/repository';
 
 @model()
-export class Job extends Entity {
+export class Lead extends Entity {
   @property({
     type: 'string',
     id: true,
@@ -15,13 +15,13 @@ export class Job extends Entity {
   })
   title: string;
 
-  constructor(data?: Partial<Job>) {
+  constructor(data?: Partial<Lead>) {
     super(data);
   }
 }
 
-export interface JobRelations {
+export interface LeadRelations {
   // describe navigational properties here
 }
 
-export type JobWithRelations = Job & JobRelations;
+export type LeadWithRelations = Lead & LeadRelations;
