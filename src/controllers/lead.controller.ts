@@ -111,6 +111,7 @@ export class LeadController {
   // admin should be authenticated
   // only admin can access this route
   // Please run x and y function before this (using interceptor)
+  @intercept(LeadInterceptorInterceptor.BINDING_KEY)
   @del('/leads/{id}', {
     security: OPERATION_SECURITY_SPEC,
     responses: {
@@ -123,8 +124,6 @@ export class LeadController {
   async deleteById(@param.path.string('id') id: string): Promise<void> {
     await this.leadRepository.deleteById(id);
   }
-
-
 }
 
 

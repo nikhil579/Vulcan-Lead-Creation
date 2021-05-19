@@ -131,6 +131,34 @@ export class LeadInterceptorInterceptor implements Provider<Interceptor> {
         invocationCtx.args[1].lastModifiedBy = user.id;
         invocationCtx.args[1].lastModifiedAt = new Date();
       }
+      // DELETE
+      if (invocationCtx.methodName === 'deleteById') {
+        var flag = false;
+        const user = await this.getCurrentUser();
+        const userRecord = await this.userRepository.find({where: {id: user.id}});
+        console.log(userRecord);
+        const leadId = invocationCtx.args[0];
+        console.log(leadId);
+        const oldLead = await this.leadRepository.find({where: {id: leadId}});
+        console.log(oldLead);
+        if (userRecord[0].memberList.length == 0) {
+          flag = true;
+        }
+        else {
+          userRecord[0].memberList.forEach(element => {
+            if (element == oldLead[0].createdBy) {
+              flag = true;
+            }
+          });
+        }
+        if (!flag) {
+          console.log("MIS-MATCH");
+          throw new HttpErrors.UnprocessableEntity(
+            'Access Denied',
+          );
+        }
+        console.log("MATCH");
+      }
       const result = await next();
       // Add post-invocation logic here
       return result;
