@@ -23,7 +23,7 @@ export class Lead extends Entity {
   @property({
     type: 'string',
   })
-  modifiedBy?: string;
+  lastModifiedBy?: string;
 
   @property({
     type: 'date',

@@ -45,7 +45,7 @@ export class LeadController {
         'application/json': {
           schema: getModelSchemaRef(Lead, {
             title: 'NewLead',
-            exclude: ['id', 'createdBy', 'createdAt', 'modifiedBy', 'lastModifiedAt'],
+            exclude: ['id', 'createdBy', 'createdAt', 'lastModifiedBy', 'lastModifiedAt'],
           }),
         },
       },
@@ -96,8 +96,10 @@ export class LeadController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Lead, {partial: true}),
-          exclude: ['id', 'createdBy', 'createdAt', 'modifiedBy', 'lastModifiedAt'],
+          schema: getModelSchemaRef(Lead, {
+            partial: true,
+            exclude: ['id', 'createdBy', 'createdAt', 'lastModifiedBy', 'lastModifiedAt'],
+          }),
         },
       },
     })

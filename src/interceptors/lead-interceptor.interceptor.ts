@@ -58,7 +58,7 @@ export class LeadInterceptorInterceptor implements Provider<Interceptor> {
       console.log(invocationCtx.args[0]);
       // Add pre-invocation logic here
       console.log(invocationCtx.methodName);
-      console.log(invocationCtx);
+      // console.log(invocationCtx);
       if (invocationCtx.methodName === 'create') {
         const user = await this.getCurrentUser();
         console.log(invocationCtx.args[0]);
@@ -93,18 +93,43 @@ export class LeadInterceptorInterceptor implements Provider<Interceptor> {
           console.log("Where", invocationCtx.args[0].where);
         }
       }
+      console.log(invocationCtx.args[1]);
       if (invocationCtx.methodName === 'updateById') {
+        var flag = false;
         const user = await this.getCurrentUser();
+        const userRecord = await this.userRepository.find({where: {id: user.id}});
+        console.log(userRecord);
+        const leadId = invocationCtx.args[0];
+        console.log(leadId);
+        const oldLead = await this.leadRepository.find({where: {id: leadId}});
+        console.log(oldLead);
+        if (userRecord[0].memberList.length == 0) {
+          flag = true;
+        }
+        else {
+          userRecord[0].memberList.forEach(element => {
+            if (element == oldLead[0].createdBy) {
+              flag = true;
+            }
+          });
+        }
+        if (!flag) {
+          console.log("MIS-MATCH");
+          throw new HttpErrors.UnprocessableEntity(
+            'Access Denied',
+          );
+        }
+        console.log("MATCH");
         const {title} = invocationCtx.args[1];
         // console.log(title);
-        invocationCtx.args[1].modifiedBy = user.id;
-
         const titleAlreadyExist = await this.leadRepository.find({where: {title}})
         if (titleAlreadyExist.length) {
           throw new HttpErrors.UnprocessableEntity(
             'Title already exist',
           );
         }
+        invocationCtx.args[1].lastModifiedBy = user.id;
+        invocationCtx.args[1].lastModifiedAt = new Date();
       }
       const result = await next();
       // Add post-invocation logic here
