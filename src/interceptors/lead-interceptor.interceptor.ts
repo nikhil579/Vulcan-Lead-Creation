@@ -58,11 +58,11 @@ export class LeadInterceptorInterceptor implements Provider<Interceptor> {
       console.log(invocationCtx.args[0]);
       // Add pre-invocation logic here
       console.log(invocationCtx.methodName);
+      console.log(invocationCtx);
       if (invocationCtx.methodName === 'create') {
         const user = await this.getCurrentUser();
         console.log(invocationCtx.args[0]);
         const {title} = invocationCtx.args[0];
-
         console.log(title);
         invocationCtx.args[0].createdBy = user.id;
         const titleAlreadyExist = await this.leadRepository.find({where: {title}})
@@ -91,6 +91,19 @@ export class LeadInterceptorInterceptor implements Provider<Interceptor> {
           invocationCtx.args[0].where = filter;
           console.log(filter);
           console.log("Where", invocationCtx.args[0].where);
+        }
+      }
+      if (invocationCtx.methodName === 'updateById') {
+        const user = await this.getCurrentUser();
+        const {title} = invocationCtx.args[1];
+        // console.log(title);
+        invocationCtx.args[1].modifiedBy = user.id;
+
+        const titleAlreadyExist = await this.leadRepository.find({where: {title}})
+        if (titleAlreadyExist.length) {
+          throw new HttpErrors.UnprocessableEntity(
+            'Title already exist',
+          );
         }
       }
       const result = await next();

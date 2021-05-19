@@ -45,7 +45,7 @@ export class LeadController {
         'application/json': {
           schema: getModelSchemaRef(Lead, {
             title: 'NewLead',
-            exclude: ['id', 'modifiedBy'],
+            exclude: ['id', 'createdBy', 'createdAt', 'modifiedBy', 'lastModifiedAt'],
           }),
         },
       },
@@ -80,6 +80,7 @@ export class LeadController {
   // admin should be authenticated
   // only admin can access this route
   // Please run x and y function before this (using interceptor)
+  @intercept(LeadInterceptorInterceptor.BINDING_KEY)
   @patch('/leads/{id}', {
     security: OPERATION_SECURITY_SPEC,
     responses: {
@@ -96,7 +97,7 @@ export class LeadController {
       content: {
         'application/json': {
           schema: getModelSchemaRef(Lead, {partial: true}),
-          exclude: ['id', 'createdBy', 'modifiedBy'],
+          exclude: ['id', 'createdBy', 'createdAt', 'modifiedBy', 'lastModifiedAt'],
         },
       },
     })

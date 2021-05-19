@@ -25,6 +25,17 @@ export class Lead extends Entity {
   })
   modifiedBy?: string;
 
+  @property({
+    type: 'date',
+    default: () => new Date(),
+  })
+  createdAt?: Date;
+
+  @property({
+    type: 'date',
+  })
+  lastModifiedAt?: Date;
+
   constructor(data?: Partial<Lead>) {
     super(data);
   }
