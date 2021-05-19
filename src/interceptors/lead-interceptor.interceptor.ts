@@ -80,7 +80,12 @@ export class LeadInterceptorInterceptor implements Provider<Interceptor> {
         var filter: any = {};
         console.log(userRecord);
         if (userRecord[0].memberList.length == 1) {
-          invocationCtx.args[0].where.createdBy = user.id;
+          if (typeof (invocationCtx.args[0]) == 'undefined') {
+            invocationCtx.args[0] = {where: {createdBy: user.id}};
+          }
+          else {
+            invocationCtx.args[0]['where'].createdBy = user.id;
+          }
           console.log("Where", invocationCtx.args[0].where);
         }
         if (userRecord[0].memberList.length > 1) {
@@ -88,12 +93,19 @@ export class LeadInterceptorInterceptor implements Provider<Interceptor> {
           userRecord[0].memberList.forEach(element => {
             filter.or.push({createdBy: element});
           });
-          invocationCtx.args[0].where = filter;
-          console.log(filter);
-          console.log("Where", invocationCtx.args[0].where);
+          console.log(invocationCtx);
+          console.log(invocationCtx.args.length);
+          console.log(typeof (invocationCtx.args[0]));
+          if (typeof (invocationCtx.args[0]) == 'undefined') {
+            invocationCtx.args[0] = {where: filter};
+          }
+          else {
+            invocationCtx.args[0].where = filter;
+            console.log(filter);
+          }
+          console.log("PUSH", invocationCtx.args[0]);
         }
       }
-      console.log(invocationCtx.args[1]);
       if (invocationCtx.methodName === 'updateById') {
         var flag = false;
         const user = await this.getCurrentUser();
