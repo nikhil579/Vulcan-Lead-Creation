@@ -84,7 +84,7 @@ export class LeadInterceptorInterceptor implements Provider<Interceptor> {
             invocationCtx.args[0] = {where: {createdBy: user.id}};
           }
           else {
-            invocationCtx.args[0]['where'].createdBy = user.id;
+            invocationCtx.args[0] = {where: {createdBy: user.id}};
           }
           console.log("Where", invocationCtx.args[0].where);
         }
