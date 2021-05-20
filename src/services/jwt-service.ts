@@ -49,6 +49,7 @@ export class JWTService {
           id: decryptedToken.id,
           name: decryptedToken.name,
           permissions: decryptedToken.permissions,
+          tenantId: decryptedToken.tenantId,
         },
       );
     } catch (err) {

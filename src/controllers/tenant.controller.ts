@@ -1,30 +1,40 @@
+import {inject} from '@loopback/context';
 import {
   Count,
   CountSchema,
   Filter,
   FilterExcludingWhere,
   repository,
-  Where,
+  Where
 } from '@loopback/repository';
 import {
-  post,
-  param,
-  get,
-  getModelSchemaRef,
-  patch,
-  put,
-  del,
-  requestBody,
-  response,
+  del, get, getModelSchemaRef, param, patch, post, put, requestBody, response
 } from '@loopback/rest';
+import * as _ from 'lodash';
+import {
+  TokenServiceBindings,
+  UserServiceBindings
+} from '../keys';
 import {Tenant} from '../models';
-import {TenantRepository} from '../repositories';
+import {Credentials, TenantRepository} from '../repositories';
+import {JWTService} from '../services/jwt-service';
+import {validateTenant} from '../services/tenant-validator.service';
+import {MyUserService} from '../services/user-service';
 
 export class TenantController {
   constructor(
     @repository(TenantRepository)
-    public tenantRepository : TenantRepository,
-  ) {}
+    public tenantRepository: TenantRepository,
+
+    // @inject('service.user.service')
+    @inject(UserServiceBindings.USER_SERVICE)
+    public userService: MyUserService,
+
+    // @inject('service.jwt.service')
+    @inject(TokenServiceBindings.TOKEN_SERVICE)
+    public jwtService: JWTService,
+
+  ) { }
 
   @post('/tenants')
   @response(200, {
@@ -147,4 +157,38 @@ export class TenantController {
   async deleteById(@param.path.string('id') id: string): Promise<void> {
     await this.tenantRepository.deleteById(id);
   }
+
+  //
+  @post('/tenants/login')
+  @response(200, {
+    description: 'Tenant User Login',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          properties: {
+            token: {
+              type: 'string',
+            },
+          },
+        },
+      },
+    },
+  })
+  async login(
+    @requestBody() credentials: Credentials,
+  ): Promise<{token: string}> {
+    console.log(credentials);
+    // make sure tenant exists
+    validateTenant(_.pick(credentials, ['email', 'password', 'permissions', 'tenantName']));
+    // make sure user exist,password should be valid
+    const user = await this.userService.verifyCredentials(credentials);
+    // console.log(user);
+    // eslint-disable-next-line @typescript-eslint/await-thenable
+    const userProfile = await this.userService.convertToUserProfile(user);
+    // console.log(userProfile);
+    const token = await this.jwtService.generateToken(userProfile);
+    return Promise.resolve({token: token});
+  }
 }
+

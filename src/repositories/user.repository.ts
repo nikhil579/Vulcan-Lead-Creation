@@ -1,13 +1,14 @@
-import {inject, Getter} from '@loopback/core';
-import {DefaultCrudRepository, repository, HasManyRepositoryFactory} from '@loopback/repository';
+import {Getter, inject} from '@loopback/core';
+import {DefaultCrudRepository, HasManyRepositoryFactory, repository} from '@loopback/repository';
 import {DbDataSource} from '../datasources';
-import {User, UserRelations, Lead} from '../models';
+import {Lead, User, UserRelations} from '../models';
 import {LeadRepository} from './lead.repository';
 
 export type Credentials = {
   email: string;
   password: string;
   permissions: string[];
+  tenantName: string;
 };
 
 export class UserRepository extends DefaultCrudRepository<

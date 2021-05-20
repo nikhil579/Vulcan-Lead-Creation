@@ -50,6 +50,18 @@ export class User extends Entity {
   })
   memberList: string[];
 
+  @property({
+    type: 'string',
+    required: true,
+  })
+  tenantId: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  tenantName: string;
+
   constructor(data?: Partial<User>) {
     super(data);
   }
