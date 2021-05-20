@@ -10,7 +10,6 @@ import {
 import {
   del, get, getModelSchemaRef, param, patch, post, put, requestBody, response
 } from '@loopback/rest';
-import * as _ from 'lodash';
 import {
   TokenServiceBindings,
   UserServiceBindings
@@ -18,7 +17,6 @@ import {
 import {Tenant} from '../models';
 import {Credentials, TenantRepository} from '../repositories';
 import {JWTService} from '../services/jwt-service';
-import {validateTenant} from '../services/tenant-validator.service';
 import {MyUserService} from '../services/user-service';
 
 export class TenantController {
@@ -180,13 +178,15 @@ export class TenantController {
   ): Promise<{token: string}> {
     console.log(credentials);
     // make sure tenant exists
-    validateTenant(_.pick(credentials, ['email', 'password', 'permissions', 'tenantName']));
+    const tenant: Tenant = await this.userService.verifyTenant(credentials);
+    console.log(tenant);
     // make sure user exist,password should be valid
     const user = await this.userService.verifyCredentials(credentials);
     // console.log(user);
     // eslint-disable-next-line @typescript-eslint/await-thenable
     const userProfile = await this.userService.convertToUserProfile(user);
-    // console.log(userProfile);
+
+    console.log(userProfile);
     const token = await this.jwtService.generateToken(userProfile);
     return Promise.resolve({token: token});
   }

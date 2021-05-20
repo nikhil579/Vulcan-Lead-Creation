@@ -4,12 +4,16 @@ import {repository} from '@loopback/repository';
 import {HttpErrors} from '@loopback/rest';
 import {securityId, UserProfile} from '@loopback/security';
 import {PasswordHasherBindings} from '../keys';
-import {User} from '../models';
+import {Tenant, User} from '../models';
+import {TenantRepository} from '../repositories';
 import {Credentials, UserRepository} from '../repositories/user.repository';
 import {BcryptHasher} from './hash.password';
 
 export class MyUserService implements UserService<User, Credentials> {
   constructor(
+    @repository(TenantRepository)
+    public tenantRepository: TenantRepository,
+
     @repository(UserRepository)
     public userRepository: UserRepository,
 
@@ -17,6 +21,8 @@ export class MyUserService implements UserService<User, Credentials> {
     @inject(PasswordHasherBindings.PASSWORD_HASHER)
     public hasher: BcryptHasher,
   ) { }
+
+
   async verifyCredentials(credentials: Credentials): Promise<User> {
     // implement this method
     const foundUser = await this.userRepository.findOne({
@@ -35,6 +41,20 @@ export class MyUserService implements UserService<User, Credentials> {
       throw new HttpErrors.Unauthorized('password is not valid');
     return foundUser;
   }
+
+  async verifyTenant(credentials: Credentials): Promise<Tenant> {
+    // implement this method
+    const foundTenant = await this.tenantRepository.findOne({
+      where: {
+        tenantName: credentials.tenantName,
+      },
+    });
+    if (!foundTenant) {
+      throw new HttpErrors.NotFound('Tenant not found');
+    }
+    return foundTenant;
+  }
+
   convertToUserProfile(user: User): UserProfile {
     let userName = '';
     if (user.firstName) userName = user.firstName;
@@ -49,7 +69,7 @@ export class MyUserService implements UserService<User, Credentials> {
       id: user.id,
       email: user.email,
       permissions: user.permissions,
+      databaseName: user.databaseName,
     };
-    // throw new Error('Method not implemented.');
   }
 }

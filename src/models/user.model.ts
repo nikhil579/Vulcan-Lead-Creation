@@ -62,6 +62,12 @@ export class User extends Entity {
   })
   tenantName: string;
 
+  @property({
+    type: 'string',
+    required: true,
+  })
+  databaseName: string;
+
   constructor(data?: Partial<User>) {
     super(data);
   }
