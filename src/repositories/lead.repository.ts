@@ -10,5 +10,6 @@ export class LeadRepository extends DefaultCrudRepository<
 > {
   constructor(@inject('datasources.db') dataSource: DbDataSource) {
     super(Lead, dataSource);
+    console.log('LEAD REPO : ');
   }
 }

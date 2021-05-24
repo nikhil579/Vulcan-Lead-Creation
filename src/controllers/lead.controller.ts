@@ -1,6 +1,7 @@
 import {authenticate} from '@loopback/authentication';
 import {OPERATION_SECURITY_SPEC} from '@loopback/authentication-jwt';
 import {intercept} from '@loopback/context';
+import {service} from '@loopback/core';
 import {
   CountSchema,
   Filter,
@@ -18,11 +19,14 @@ import {
 import {LeadInterceptorInterceptor} from '../interceptors';
 import {Lead} from '../models';
 import {LeadRepository} from '../repositories';
+import {LeadService} from '../services';
 
 export class LeadController {
   constructor(
     @repository(LeadRepository)
     public leadRepository: LeadRepository,
+    @service(LeadService)
+    public leadService: LeadService
   ) { }
 
   // admin should be authenticated
@@ -55,8 +59,8 @@ export class LeadController {
     return this.leadRepository.create(lead);
   }
 
-  @intercept(LeadInterceptorInterceptor.BINDING_KEY)
-  @get('/leads', {
+  // @intercept(LeadInterceptorInterceptor.BINDING_KEY)
+  @get('/leads/db', {
     security: OPERATION_SECURITY_SPEC,
     responses: {
       '200': {
@@ -73,9 +77,33 @@ export class LeadController {
     },
   })
   @authenticate('jwt')
-  async find(@param.filter(Lead) filter?: Filter<Lead>): Promise<Lead[]> {
-    return this.leadRepository.find(filter);
+  async find(@param.query.string('dbName') dbName: string,
+    @param.filter(Lead) filter?: Filter<Lead>): Promise<Lead[]> {
+    return this.leadService.findLead(dbName);
   }
+
+  // @intercept(LeadInterceptorInterceptor.BINDING_KEY)
+  // @get('/leadsBor', {
+  //   security: OPERATION_SECURITY_SPEC,
+  //   responses: {
+  //     '200': {
+  //       description: 'Array of Lead model instances',
+  //       content: {
+  //         'application/json': {
+  //           schema: {
+  //             type: 'array',
+  //             items: getModelSchemaRef(Lead, {includeRelations: true}),
+  //           },
+  //         },
+  //       },
+  //     },
+  //   },
+  // })
+  // @authenticate('jwt')
+  // async findBor(@param.filter(Lead) filter?: Filter<Lead>): Promise<Lead[]> {
+  //   return this.leadService.findLead('BorDB');
+  // }
+
 
   // admin should be authenticated
   // only admin can access this route

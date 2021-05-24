@@ -8,9 +8,8 @@ export class TenantRepository extends DefaultCrudRepository<
   typeof Tenant.prototype.id,
   TenantRelations
 > {
-  constructor(
-    @inject('datasources.tenant') dataSource: TenantDataSource,
-  ) {
+  constructor(@inject('datasources.tenant') dataSource: TenantDataSource) {
     super(Tenant, dataSource);
+    console.log('TENANT REPO : ');
   }
 }
