@@ -1,6 +1,6 @@
 import {Getter, inject} from '@loopback/core';
 import {DefaultCrudRepository, HasManyRepositoryFactory, repository} from '@loopback/repository';
-import {DbDataSource} from '../datasources';
+import {TenantDataSource} from '../datasources';
 import {Lead, User, UserRelations} from '../models';
 import {LeadRepository} from './lead.repository';
 
@@ -19,7 +19,7 @@ export class UserRepository extends DefaultCrudRepository<
 
   public readonly leads: HasManyRepositoryFactory<Lead, typeof User.prototype.id>;
 
-  constructor(@inject('datasources.db') dataSource: DbDataSource, @repository.getter('LeadRepository') protected leadRepositoryGetter: Getter<LeadRepository>,) {
+  constructor(@inject('datasources.tenant') dataSource: TenantDataSource, @repository.getter('LeadRepository') protected leadRepositoryGetter: Getter<LeadRepository>,) {
     super(User, dataSource);
     console.log('USER REPO : ');
     this.leads = this.createHasManyRepositoryFactoryFor('leads', leadRepositoryGetter,);

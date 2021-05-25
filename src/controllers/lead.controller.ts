@@ -1,6 +1,6 @@
 import {authenticate} from '@loopback/authentication';
 import {OPERATION_SECURITY_SPEC} from '@loopback/authentication-jwt';
-import {intercept} from '@loopback/context';
+import {inject, intercept} from '@loopback/context';
 import {service} from '@loopback/core';
 import {
   CountSchema,
@@ -26,7 +26,8 @@ export class LeadController {
     @repository(LeadRepository)
     public leadRepository: LeadRepository,
     @service(LeadService)
-    public leadService: LeadService
+    public leadService: LeadService,
+    @inject('MY_USER_PROFILE') public authorizedUserProfile: any
   ) { }
 
   // admin should be authenticated
@@ -56,11 +57,11 @@ export class LeadController {
     })
     lead: Omit<Lead, 'id'>,
   ): Promise<Lead> {
-    return this.leadRepository.create(lead);
+    return this.leadService.create(lead, this.authorizedUserProfile.databaseName);
   }
 
-  // @intercept(LeadInterceptorInterceptor.BINDING_KEY)
-  @get('/leads/db', {
+  @intercept(LeadInterceptorInterceptor.BINDING_KEY)
+  @get('/leads', {
     security: OPERATION_SECURITY_SPEC,
     responses: {
       '200': {
@@ -76,33 +77,19 @@ export class LeadController {
       },
     },
   })
+
   @authenticate('jwt')
-  async find(@param.query.string('dbName') dbName: string,
-    @param.filter(Lead) filter?: Filter<Lead>): Promise<Lead[]> {
-    return this.leadService.findLead(dbName);
+  async find(@param.filter(Lead) filter?: Filter<Lead>): Promise<Lead[]> {
+    console.log("FIND JWT", this.authorizedUserProfile);
+    // const credentials = this.jwtStrategy.getUserProfile(request);
+    // console.log(credentials);
+    // const user = await this.userService.verifyCredentials(credentials);
+    // const userProfile = this.userService.convertToUserProfile(user);
+    return this.leadService.findLead(this.authorizedUserProfile.databaseName, filter);
   }
 
-  // @intercept(LeadInterceptorInterceptor.BINDING_KEY)
-  // @get('/leadsBor', {
-  //   security: OPERATION_SECURITY_SPEC,
-  //   responses: {
-  //     '200': {
-  //       description: 'Array of Lead model instances',
-  //       content: {
-  //         'application/json': {
-  //           schema: {
-  //             type: 'array',
-  //             items: getModelSchemaRef(Lead, {includeRelations: true}),
-  //           },
-  //         },
-  //       },
-  //     },
-  //   },
-  // })
-  // @authenticate('jwt')
-  // async findBor(@param.filter(Lead) filter?: Filter<Lead>): Promise<Lead[]> {
-  //   return this.leadService.findLead('BorDB');
-  // }
+  // async find(@param.filter(Lead) filter?: Filter<Lead>): Promise<Lead[]> {
+  //   return this.leadRepository.find(filter);
 
 
   // admin should be authenticated

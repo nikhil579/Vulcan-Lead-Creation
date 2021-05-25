@@ -10,7 +10,7 @@ import {
   UserServiceBindings
 } from '../keys';
 import {User} from '../models';
-import {Credentials, UserRepository} from '../repositories';
+import {Credentials, TenantRepository, UserRepository} from '../repositories';
 import {validateCredentials} from '../services';
 import {BcryptHasher} from '../services/hash.password';
 import {JWTService} from '../services/jwt-service';
@@ -21,6 +21,9 @@ export class UserController {
   constructor(
     @repository(UserRepository)
     public userRepository: UserRepository,
+
+    @repository(TenantRepository)
+    public tenantRepository: TenantRepository,
 
     // @inject('service.hasher')
     @inject(PasswordHasherBindings.PASSWORD_HASHER)

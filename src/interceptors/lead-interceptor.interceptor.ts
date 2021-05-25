@@ -55,9 +55,9 @@ export class LeadInterceptorInterceptor implements Provider<Interceptor> {
     next: () => ValueOrPromise<InvocationResult>,
   ) {
     try {
-      console.log(invocationCtx.args[0]);
+      // console.log(invocationCtx.args[0]);
       // Add pre-invocation logic here
-      console.log(invocationCtx.methodName);
+      // console.log(invocationCtx.methodName);
       // console.log(invocationCtx);
       if (invocationCtx.methodName === 'create') {
         const user = await this.getCurrentUser();
@@ -86,35 +86,35 @@ export class LeadInterceptorInterceptor implements Provider<Interceptor> {
           else {
             invocationCtx.args[0] = {where: {createdBy: user.id}};
           }
-          console.log("Where", invocationCtx.args[0].where);
+          // console.log("Where", invocationCtx.args[0].where);
         }
         if (userRecord[0].memberList.length > 1) {
           filter.or = [];
           userRecord[0].memberList.forEach(element => {
             filter.or.push({createdBy: element});
           });
-          console.log(invocationCtx);
-          console.log(invocationCtx.args.length);
-          console.log(typeof (invocationCtx.args[0]));
+          // console.log(invocationCtx);
+          // console.log(invocationCtx.args.length);
+          // console.log(typeof (invocationCtx.args[0]));
           if (typeof (invocationCtx.args[0]) == 'undefined') {
             invocationCtx.args[0] = {where: filter};
           }
           else {
-            invocationCtx.args[0].where = filter;
-            console.log(filter);
+            invocationCtx.args[0] = {where: filter};
+            // console.log(filter);
           }
-          console.log("PUSH", invocationCtx.args[0]);
+          // console.log("PUSH", invocationCtx.args[0]);
         }
       }
       if (invocationCtx.methodName === 'updateById') {
         var flag = false;
         const user = await this.getCurrentUser();
         const userRecord = await this.userRepository.find({where: {id: user.id}});
-        console.log(userRecord);
+        // console.log(userRecord);
         const leadId = invocationCtx.args[0];
-        console.log(leadId);
+        // console.log(leadId);
         const oldLead = await this.leadRepository.find({where: {id: leadId}});
-        console.log(oldLead);
+        // console.log(oldLead);
         if (userRecord[0].memberList.length == 0) {
           flag = true;
         }
@@ -126,12 +126,12 @@ export class LeadInterceptorInterceptor implements Provider<Interceptor> {
           });
         }
         if (!flag) {
-          console.log("MIS-MATCH");
+          // console.log("MIS-MATCH");
           throw new HttpErrors.UnprocessableEntity(
             'Access Denied',
           );
         }
-        console.log("MATCH");
+        // console.log("MATCH");
         const {title} = invocationCtx.args[1];
         // console.log(title);
         const titleAlreadyExist = await this.leadRepository.find({where: {title}})
@@ -148,11 +148,11 @@ export class LeadInterceptorInterceptor implements Provider<Interceptor> {
         var flag = false;
         const user = await this.getCurrentUser();
         const userRecord = await this.userRepository.find({where: {id: user.id}});
-        console.log(userRecord);
+        // console.log(userRecord);
         const leadId = invocationCtx.args[0];
-        console.log(leadId);
+        // console.log(leadId);
         const oldLead = await this.leadRepository.find({where: {id: leadId}});
-        console.log(oldLead);
+        // console.log(oldLead);
         if (userRecord[0].memberList.length == 0) {
           flag = true;
         }
@@ -164,12 +164,12 @@ export class LeadInterceptorInterceptor implements Provider<Interceptor> {
           });
         }
         if (!flag) {
-          console.log("MIS-MATCH");
+          // console.log("MIS-MATCH");
           throw new HttpErrors.UnprocessableEntity(
             'Access Denied',
           );
         }
-        console.log("MATCH");
+        // console.log("MATCH");
       }
       const result = await next();
       // Add post-invocation logic here

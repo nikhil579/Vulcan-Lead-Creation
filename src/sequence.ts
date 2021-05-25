@@ -9,7 +9,7 @@ import {
   RequestContext,
   RestBindings,
   Send,
-  SequenceHandler,
+  SequenceHandler
 } from '@loopback/rest';
 const SequenceActions = RestBindings.SequenceActions;
 
@@ -29,7 +29,7 @@ export class MySequence implements SequenceHandler {
     @inject(SequenceActions.REJECT) public reject: Reject,
     @inject(AuthenticationBindings.AUTH_ACTION)
     protected authenticateRequest: AuthenticateFn,
-  ) {}
+  ) { }
 
   async handle(context: RequestContext) {
     try {
@@ -39,7 +39,8 @@ export class MySequence implements SequenceHandler {
       const route = this.findRoute(request);
 
       // call authentication action
-      await this.authenticateRequest(request);
+      const userProfile = await this.authenticateRequest(request);
+      context.bind('MY_USER_PROFILE').to(userProfile);
 
       const args = await this.parseParams(request, route);
       const result = await this.invoke(route, args);

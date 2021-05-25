@@ -54,12 +54,6 @@ export class User extends Entity {
     type: 'string',
     required: true,
   })
-  tenantId: string;
-
-  @property({
-    type: 'string',
-    required: true,
-  })
   tenantName: string;
 
   @property({

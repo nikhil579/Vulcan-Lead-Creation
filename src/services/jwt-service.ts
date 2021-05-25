@@ -49,9 +49,10 @@ export class JWTService {
           id: decryptedToken.id,
           name: decryptedToken.name,
           permissions: decryptedToken.permissions,
-          tenantId: decryptedToken.tenantId,
+          databaseName: decryptedToken.databaseName,
         },
       );
+      console.log("User Profile", userProfile);
     } catch (err) {
       throw new HttpErrors.Unauthorized(`Error verifying token:${err.message}`);
     }
