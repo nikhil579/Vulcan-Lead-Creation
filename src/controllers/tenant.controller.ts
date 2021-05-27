@@ -1,3 +1,5 @@
+import {authenticate} from '@loopback/authentication';
+import {authorize} from '@loopback/authorization';
 import {inject} from '@loopback/context';
 import {
   Count,
@@ -10,12 +12,14 @@ import {
 import {
   del, get, getModelSchemaRef, param, patch, post, put, requestBody, response
 } from '@loopback/rest';
+import {PermissionKeys} from '../authorization/permission-keys';
 import {
   TokenServiceBindings,
   UserServiceBindings
 } from '../keys';
 import {Tenant} from '../models';
 import {Credentials, TenantRepository} from '../repositories';
+import {basicAuthorization} from '../services';
 import {JWTService} from '../services/jwt-service';
 import {MyUserService} from '../services/user-service';
 
@@ -39,6 +43,8 @@ export class TenantController {
     description: 'Tenant model instance',
     content: {'application/json': {schema: getModelSchemaRef(Tenant)}},
   })
+  @authenticate('jwt')
+  @authorize({allowedRoles: [PermissionKeys.Admin], voters: [basicAuthorization]})
   async create(
     @requestBody({
       content: {
@@ -60,6 +66,8 @@ export class TenantController {
     description: 'Tenant model count',
     content: {'application/json': {schema: CountSchema}},
   })
+  @authenticate('jwt')
+  @authorize({allowedRoles: [PermissionKeys.Admin], voters: [basicAuthorization]})
   async count(
     @param.where(Tenant) where?: Where<Tenant>,
   ): Promise<Count> {
@@ -78,6 +86,8 @@ export class TenantController {
       },
     },
   })
+  @authenticate('jwt')
+  @authorize({allowedRoles: [PermissionKeys.Admin], voters: [basicAuthorization]})
   async find(
     @param.filter(Tenant) filter?: Filter<Tenant>,
   ): Promise<Tenant[]> {
@@ -89,6 +99,8 @@ export class TenantController {
     description: 'Tenant PATCH success count',
     content: {'application/json': {schema: CountSchema}},
   })
+  @authenticate('jwt')
+  @authorize({allowedRoles: [PermissionKeys.Admin], voters: [basicAuthorization]})
   async updateAll(
     @requestBody({
       content: {
@@ -112,6 +124,8 @@ export class TenantController {
       },
     },
   })
+  @authenticate('jwt')
+  @authorize({allowedRoles: [PermissionKeys.Admin], voters: [basicAuthorization]})
   async findById(
     @param.path.string('id') id: string,
     @param.filter(Tenant, {exclude: 'where'}) filter?: FilterExcludingWhere<Tenant>
@@ -123,6 +137,8 @@ export class TenantController {
   @response(204, {
     description: 'Tenant PATCH success',
   })
+  @authenticate('jwt')
+  @authorize({allowedRoles: [PermissionKeys.Admin], voters: [basicAuthorization]})
   async updateById(
     @param.path.string('id') id: string,
     @requestBody({
@@ -141,6 +157,8 @@ export class TenantController {
   @response(204, {
     description: 'Tenant PUT success',
   })
+  @authenticate('jwt')
+  @authorize({allowedRoles: [PermissionKeys.Admin], voters: [basicAuthorization]})
   async replaceById(
     @param.path.string('id') id: string,
     @requestBody() tenant: Tenant,
@@ -152,11 +170,12 @@ export class TenantController {
   @response(204, {
     description: 'Tenant DELETE success',
   })
+  @authenticate('jwt')
+  @authorize({allowedRoles: [PermissionKeys.Admin], voters: [basicAuthorization]})
   async deleteById(@param.path.string('id') id: string): Promise<void> {
     await this.tenantRepository.deleteById(id);
   }
 
-  //
   @post('/tenants/login')
   @response(200, {
     description: 'Tenant User Login',
@@ -176,17 +195,17 @@ export class TenantController {
   async login(
     @requestBody() credentials: Credentials,
   ): Promise<{token: string}> {
-    console.log(credentials);
+    //console.log(credentials);
     // make sure tenant exists
     const tenant: Tenant = await this.userService.verifyTenant(credentials);
-    console.log(tenant);
+    //console.log(tenant);
     // make sure user exist,password should be valid
     const user = await this.userService.verifyCredentials(credentials);
     // console.log(user);
     // eslint-disable-next-line @typescript-eslint/await-thenable
     const userProfile = await this.userService.convertToUserProfile(user);
 
-    console.log(userProfile);
+    //console.log(userProfile);
     const token = await this.jwtService.generateToken(userProfile);
     return Promise.resolve({token: token});
   }

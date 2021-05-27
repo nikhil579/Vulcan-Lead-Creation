@@ -6,7 +6,7 @@ export interface RequiredPermissions {
 
 export interface MyUserProfile {
   id: string;
-  email?: string;
+  email: string;
   name: string;
   permissions: PermissionKeys[];
 }

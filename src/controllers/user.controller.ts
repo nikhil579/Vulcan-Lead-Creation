@@ -1,9 +1,11 @@
 import {authenticate, AuthenticationBindings} from '@loopback/authentication';
+import {authorize} from '@loopback/authorization';
 import {inject} from '@loopback/core';
 import {repository} from '@loopback/repository';
 import {get, getJsonSchemaRef, post, requestBody} from '@loopback/rest';
 import {UserProfile} from '@loopback/security';
 import * as _ from 'lodash';
+import {PermissionKeys} from '../authorization/permission-keys';
 import {
   PasswordHasherBindings,
   TokenServiceBindings,
@@ -11,7 +13,7 @@ import {
 } from '../keys';
 import {User} from '../models';
 import {Credentials, TenantRepository, UserRepository} from '../repositories';
-import {validateCredentials} from '../services';
+import {basicAuthorization, validateCredentials} from '../services';
 import {BcryptHasher} from '../services/hash.password';
 import {JWTService} from '../services/jwt-service';
 import {MyUserService} from '../services/user-service';
@@ -48,6 +50,9 @@ export class UserController {
       },
     },
   })
+  // old syntax was -> @authenticate('jwt', {required: [PermissionKeys.Admin]})
+  // @authenticate('jwt')
+  // @authorize({allowedRoles: [PermissionKeys.Admin], voters: [basicAuthorization]})
   async signup(@requestBody() userData: User) {
     validateCredentials(_.pick(userData, ['email', 'password', 'permissions', 'tenantName']));
     userData.password = await this.hasher.hashPassword(userData.password);
@@ -75,6 +80,7 @@ export class UserController {
       },
     },
   })
+
   async login(
     @requestBody() credentials: Credentials,
   ): Promise<{token: string}> {
@@ -89,7 +95,7 @@ export class UserController {
     return Promise.resolve({token: token});
   }
 
-  @authenticate('jwt')
+
   @get('/users/me', {
     security: OPERATION_SECURITY_SPEC,
     responses: {
@@ -103,10 +109,22 @@ export class UserController {
       },
     },
   })
+  // old syntax was -> @authenticate('jwt', {required: [PermissionKeys.Admin]})
+  @authenticate('jwt')
+
   async me(
     @inject(AuthenticationBindings.CURRENT_USER)
     currentUser: UserProfile,
   ): Promise<UserProfile> {
     return Promise.resolve(currentUser);
+  }
+
+
+
+  @authenticate('jwt')
+  @authorize({allowedRoles: [PermissionKeys.Admin], voters: [basicAuthorization]})
+  @get('/if-user-is-allowed')
+  ifUserAllowed(): string {
+    return 'Yes';
   }
 }

@@ -52,7 +52,7 @@ export class JWTService {
           databaseName: decryptedToken.databaseName,
         },
       );
-      console.log("User Profile", userProfile);
+      //console.log("User Profile", userProfile);
     } catch (err) {
       throw new HttpErrors.Unauthorized(`Error verifying token:${err.message}`);
     }

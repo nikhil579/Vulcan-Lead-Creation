@@ -1,10 +1,10 @@
-import { /* inject, */ BindingScope, injectable} from '@loopback/core';
+import {bind, BindingScope} from '@loopback/core';
 import {DataObject, DefaultCrudRepository, Filter, Options, repository} from '@loopback/repository';
-import {DbDataSource} from '../datasources';
+import {TenantDataSource} from '../datasources';
 import {Lead} from '../models';
 import {TenantRepository} from '../repositories';
 
-@injectable({scope: BindingScope.TRANSIENT})
+@bind({scope: BindingScope.SINGLETON})
 export class LeadService {
 
   connection: any = {};
@@ -14,7 +14,7 @@ export class LeadService {
   //
   // find(filter?: Filter<T>, options?: Options): Promise<(T & Relations)[]>;
   async findLead(tenantDB: string, filter?: Filter<Lead>): Promise<Lead[]> {
-    console.log("In the FINDLEAD", tenantDB);
+    //console.log("In the FINDLEAD", tenantDB);
     const dynamicRepo = await this.createConnection(tenantDB);
     // return this.connection[tenantDB].find();
     return dynamicRepo.find(filter);
@@ -28,7 +28,7 @@ export class LeadService {
   async createConnection(tenantDB: string) {
     // const tenants = await this.tenantRepository.findOne({where: {databaseName: tenantDB}});
     // tenants.forEach((tenant) => {
-    const DB = new DbDataSource({
+    const DB = new TenantDataSource({
       name: 'mongoDB',
       connector: 'mongodb',
       url: '',
@@ -39,7 +39,7 @@ export class LeadService {
       database: tenantDB,
       useNewUrlParser: true
     });
-    console.log("Creating connection for : ", tenantDB);
+    //console.log("Creating connection for : ", tenantDB);
 
     // this.connection[tenantDB ?? "DEFAULT"] = new DefaultCrudRepository(Lead, Vulcan);
     return new DefaultCrudRepository(Lead, DB);

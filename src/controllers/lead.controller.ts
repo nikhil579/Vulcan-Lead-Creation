@@ -1,5 +1,6 @@
 import {authenticate} from '@loopback/authentication';
 import {OPERATION_SECURITY_SPEC} from '@loopback/authentication-jwt';
+import {authorize} from '@loopback/authorization';
 import {inject, intercept} from '@loopback/context';
 import {service} from '@loopback/core';
 import {
@@ -16,10 +17,11 @@ import {
   post,
   requestBody
 } from '@loopback/rest';
+import {PermissionKeys} from '../authorization/permission-keys';
 import {LeadInterceptorInterceptor} from '../interceptors';
 import {Lead} from '../models';
 import {LeadRepository} from '../repositories';
-import {LeadService} from '../services';
+import {basicAuthorization, LeadService} from '../services';
 
 export class LeadController {
   constructor(
@@ -79,8 +81,9 @@ export class LeadController {
   })
 
   @authenticate('jwt')
+  @authorize({allowedRoles: [PermissionKeys.Admin], voters: [basicAuthorization]})
   async find(@param.filter(Lead) filter?: Filter<Lead>): Promise<Lead[]> {
-    console.log("FIND JWT", this.authorizedUserProfile);
+    //console.log("FIND JWT", this.authorizedUserProfile);
     // const credentials = this.jwtStrategy.getUserProfile(request);
     // console.log(credentials);
     // const user = await this.userService.verifyCredentials(credentials);

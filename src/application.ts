@@ -4,6 +4,7 @@ import {
 } from '@loopback/authentication';
 // import {SECURITY_SCHEME_SPEC} from './utils/security-spec';
 import {SECURITY_SCHEME_SPEC} from '@loopback/authentication-jwt';
+import {AuthorizationComponent} from '@loopback/authorization';
 import {BootMixin} from '@loopback/boot';
 import {ApplicationConfig} from '@loopback/core';
 import {RepositoryMixin} from '@loopback/repository';
@@ -25,7 +26,9 @@ import {MySequence} from './sequence';
 import {BcryptHasher} from './services/hash.password';
 import {JWTService} from './services/jwt-service';
 import {MyUserService} from './services/user-service';
+
 export {ApplicationConfig};
+
 export class AuthApplication extends BootMixin(
   ServiceMixin(RepositoryMixin(RestApplication)),
 ) {
@@ -39,6 +42,7 @@ export class AuthApplication extends BootMixin(
     this.addSecuritySpec();
 
     this.component(AuthenticationComponent);
+    this.component(AuthorizationComponent);
     registerAuthenticationStrategy(this, JWTStrategy);
 
     // Set up the custom sequence

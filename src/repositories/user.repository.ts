@@ -21,7 +21,7 @@ export class UserRepository extends DefaultCrudRepository<
 
   constructor(@inject('datasources.tenant') dataSource: TenantDataSource, @repository.getter('LeadRepository') protected leadRepositoryGetter: Getter<LeadRepository>,) {
     super(User, dataSource);
-    console.log('USER REPO : ');
+    //console.log('USER REPO : ');
     this.leads = this.createHasManyRepositoryFactoryFor('leads', leadRepositoryGetter,);
   }
 }

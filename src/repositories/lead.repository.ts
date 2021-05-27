@@ -1,6 +1,6 @@
 import {inject} from '@loopback/core';
 import {DefaultCrudRepository} from '@loopback/repository';
-import {DbDataSource} from '../datasources';
+import {TenantDataSource} from '../datasources';
 import {Lead, LeadRelations} from '../models';
 
 export class LeadRepository extends DefaultCrudRepository<
@@ -8,8 +8,8 @@ export class LeadRepository extends DefaultCrudRepository<
   typeof Lead.prototype.id,
   LeadRelations
 > {
-  constructor(@inject('datasources.db') dataSource: DbDataSource) {
+  constructor(@inject('datasources.tenant') dataSource: TenantDataSource) {
     super(Lead, dataSource);
-    console.log('LEAD REPO : ');
+    //console.log('LEAD REPO : ');
   }
 }

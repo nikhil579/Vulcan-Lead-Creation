@@ -9,7 +9,7 @@ const config = {
   port: 27017,
   user: '',
   password: '',
-  database: 'PlatformDB',
+  database: '',
   useNewUrlParser: true
 };
 
@@ -27,6 +27,8 @@ export class DbDataSource extends juggler.DataSource
     @inject('datasources.config.db', {optional: true})
     dsConfig: object = config,
   ) {
+    //console.log("IN DB.DATASOURCE");
+
     super(dsConfig);
   }
 }

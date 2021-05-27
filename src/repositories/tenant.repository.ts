@@ -10,6 +10,6 @@ export class TenantRepository extends DefaultCrudRepository<
 > {
   constructor(@inject('datasources.tenant') dataSource: TenantDataSource) {
     super(Tenant, dataSource);
-    console.log('TENANT REPO : ');
+    //console.log('TENANT REPO : ');
   }
 }

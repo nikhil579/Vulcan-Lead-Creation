@@ -61,9 +61,9 @@ export class LeadInterceptorInterceptor implements Provider<Interceptor> {
       // console.log(invocationCtx);
       if (invocationCtx.methodName === 'create') {
         const user = await this.getCurrentUser();
-        console.log(invocationCtx.args[0]);
+        //console.log(invocationCtx.args[0]);
         const {title} = invocationCtx.args[0];
-        console.log(title);
+        //console.log(title);
         invocationCtx.args[0].createdBy = user.id;
         const titleAlreadyExist = await this.leadRepository.find({where: {title}})
         if (titleAlreadyExist.length) {
@@ -73,12 +73,12 @@ export class LeadInterceptorInterceptor implements Provider<Interceptor> {
         }
       }
       if (invocationCtx.methodName === 'find') {
-        console.log("GET");
-        console.log(invocationCtx.args[0]);
+        //console.log("GET");
+        //console.log(invocationCtx.args[0]);
         const user = await this.getCurrentUser();
         const userRecord = await this.userRepository.find({where: {id: user.id}});
         var filter: any = {};
-        console.log(userRecord);
+        //console.log(userRecord);
         if (userRecord[0].memberList.length == 1) {
           if (typeof (invocationCtx.args[0]) == 'undefined') {
             invocationCtx.args[0] = {where: {createdBy: user.id}};
