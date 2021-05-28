@@ -2,7 +2,7 @@ import {authenticate, AuthenticationBindings} from '@loopback/authentication';
 import {authorize} from '@loopback/authorization';
 import {inject} from '@loopback/core';
 import {repository} from '@loopback/repository';
-import {get, getJsonSchemaRef, post, requestBody} from '@loopback/rest';
+import {get, getJsonSchemaRef, HttpErrors, post, requestBody} from '@loopback/rest';
 import {UserProfile} from '@loopback/security';
 import * as _ from 'lodash';
 import {PermissionKeys} from '../authorization/permission-keys';
@@ -50,15 +50,27 @@ export class UserController {
       },
     },
   })
-  // old syntax was -> @authenticate('jwt', {required: [PermissionKeys.Admin]})
-  // @authenticate('jwt')
-  // @authorize({allowedRoles: [PermissionKeys.Admin], voters: [basicAuthorization]})
+  @authenticate('jwt')
+  @authorize({allowedRoles: [PermissionKeys.Admin], voters: [basicAuthorization]})
   async signup(@requestBody() userData: User) {
-    validateCredentials(_.pick(userData, ['email', 'password', 'permissions', 'tenantName']));
-    userData.password = await this.hasher.hashPassword(userData.password);
-    const savedUser = await this.userRepository.create(userData);
-    // delete savedUser.password;
-    return savedUser;
+    try {
+      const foundTenant = await this.tenantRepository.findOne({
+        where: {
+          tenantName: userData.tenantName,
+        },
+      });
+      if (!foundTenant) {
+        throw new HttpErrors.NotFound('Tenant not found');
+      }
+      console.log("TENANT FOUND", foundTenant);
+      validateCredentials(_.pick(userData, ['email', 'password', 'permissions', 'tenantName']));
+      userData.password = await this.hasher.hashPassword(userData.password);
+      const savedUser = await this.userRepository.create(userData);
+      return savedUser;
+    }
+    catch (error) {
+      throw new HttpErrors.NotFound('Tenant not found');
+    }
   }
 
   @post('/users/login', {
@@ -120,7 +132,7 @@ export class UserController {
   }
 
 
-
+  // mock function to check where Admin is logged in or not
   @authenticate('jwt')
   @authorize({allowedRoles: [PermissionKeys.Admin], voters: [basicAuthorization]})
   @get('/if-user-is-allowed')

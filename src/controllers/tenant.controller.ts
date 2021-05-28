@@ -204,7 +204,6 @@ export class TenantController {
     // console.log(user);
     // eslint-disable-next-line @typescript-eslint/await-thenable
     const userProfile = await this.userService.convertToUserProfile(user);
-
     //console.log(userProfile);
     const token = await this.jwtService.generateToken(userProfile);
     return Promise.resolve({token: token});

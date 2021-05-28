@@ -2,7 +2,9 @@ import {HttpErrors} from '@loopback/rest';
 import * as isEmail from 'isemail';
 import {PermissionKeys} from '../authorization/permission-keys';
 import {Credentials} from '../repositories/index';
+
 export function validateCredentials(credentials: Credentials) {
+
   if (!isEmail.validate(credentials.email)) {
     throw new HttpErrors.UnprocessableEntity('invalid Email');
   }
