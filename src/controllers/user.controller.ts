@@ -64,7 +64,7 @@ export class UserController {
     return savedUser;
   }
 
-  @post('/users/login', {
+  @post('/admin/login', {
     responses: {
       '200': {
         description: 'Token',
@@ -88,14 +88,25 @@ export class UserController {
     @requestBody() credentials: Credentials,
   ): Promise<{token: string}> {
     // make sure user exist,password should be valid
-    const user = await this.userService.verifyCredentials(credentials);
-    // console.log(user);
-    // eslint-disable-next-line @typescript-eslint/await-thenable
-    const userProfile = await this.userService.convertToUserProfile(user);
-    // console.log(userProfile);
+    console.log("Credentials", credentials);
+    const userPermission = await this.userRepository.findOne({
+      where: {email: credentials.email}
+    })
+    console.log(userPermission);
+    if (userPermission?.permissions[0] != "Admin") {
+      throw new HttpErrors.NotFound('Only Admin is allowed to login from this route');
+    }
+    else {
+      const user = await this.userService.verifyCredentials(credentials);
+      // console.log(user);
+      // eslint-disable-next-line @typescript-eslint/await-thenable
+      const userProfile = await this.userService.convertToUserProfile(user);
+      // console.log(userProfile);
 
-    const token = await this.jwtService.generateToken(userProfile);
-    return Promise.resolve({token: token});
+      const token = await this.jwtService.generateToken(userProfile);
+      return Promise.resolve({token: token});
+    }
+
   }
 
 
