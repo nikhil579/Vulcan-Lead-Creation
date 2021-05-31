@@ -59,6 +59,14 @@ export class UserController {
     }
     console.log("TENANT FOUND", foundTenant);
     validateCredentials(_.pick(userData, ['email', 'password', 'permissions', 'tenantName', 'databaseName']));
+    const uniqueEmail = await this.userRepository.findOne({
+      where: {email: userData.email}
+    })
+    // console.log("Unique email", uniqueEmail?.email);
+    // console.log("User email", userData.email);
+    if (uniqueEmail?.email == userData.email) {
+      throw new HttpErrors.Conflict('Email value is already taken');
+    }
     userData.password = await this.hasher.hashPassword(userData.password);
     const savedUser = await this.userRepository.create(userData);
     return savedUser;
