@@ -9,6 +9,7 @@ export type Credentials = {
   password: string;
   permissions: string[];
   tenantName: string;
+  databaseName: string;
 };
 
 export class UserRepository extends DefaultCrudRepository<

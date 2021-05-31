@@ -53,24 +53,15 @@ export class UserController {
   @authenticate('jwt')
   @authorize({allowedRoles: [PermissionKeys.Admin], voters: [basicAuthorization]})
   async signup(@requestBody() userData: User) {
-    try {
-      const foundTenant = await this.tenantRepository.findOne({
-        where: {
-          tenantName: userData.tenantName,
-        },
-      });
-      if (!foundTenant) {
-        throw new HttpErrors.NotFound('Tenant not found');
-      }
-      console.log("TENANT FOUND", foundTenant);
-      validateCredentials(_.pick(userData, ['email', 'password', 'permissions', 'tenantName']));
-      userData.password = await this.hasher.hashPassword(userData.password);
-      const savedUser = await this.userRepository.create(userData);
-      return savedUser;
-    }
-    catch (error) {
+    const foundTenant = await this.userService.verifyTenant(userData);
+    if (!foundTenant) {
       throw new HttpErrors.NotFound('Tenant not found');
     }
+    console.log("TENANT FOUND", foundTenant);
+    validateCredentials(_.pick(userData, ['email', 'password', 'permissions', 'tenantName', 'databaseName']));
+    userData.password = await this.hasher.hashPassword(userData.password);
+    const savedUser = await this.userRepository.create(userData);
+    return savedUser;
   }
 
   @post('/users/login', {

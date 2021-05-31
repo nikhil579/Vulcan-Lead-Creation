@@ -10,7 +10,7 @@ import {
   Where
 } from '@loopback/repository';
 import {
-  del, get, getModelSchemaRef, param, patch, post, put, requestBody, response
+  del, get, getModelSchemaRef, HttpErrors, param, patch, post, put, requestBody, response
 } from '@loopback/rest';
 import {PermissionKeys} from '../authorization/permission-keys';
 import {
@@ -58,6 +58,15 @@ export class TenantController {
     })
     tenant: Omit<Tenant, 'id'>,
   ): Promise<Tenant> {
+    const uniqueTenant = await this.tenantRepository.findOne({
+      where: {
+        tenantName: tenant.tenantName,
+        databaseName: tenant.databaseName,
+      },
+    });
+    if (uniqueTenant) {
+      throw new HttpErrors.NotFound('Tenant already exists in database');
+    }
     return this.tenantRepository.create(tenant);
   }
 

@@ -47,6 +47,7 @@ export class MyUserService implements UserService<User, Credentials> {
     const foundTenant = await this.tenantRepository.findOne({
       where: {
         tenantName: credentials.tenantName,
+        databaseName: credentials.databaseName,
       },
     });
     if (!foundTenant) {
