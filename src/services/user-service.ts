@@ -45,10 +45,7 @@ export class MyUserService implements UserService<User, Credentials> {
   async verifyTenant(credentials: Credentials): Promise<Tenant> {
     // implement this method
     const foundTenant = await this.tenantRepository.findOne({
-      where: {
-        tenantName: credentials.tenantName,
-        databaseName: credentials.databaseName,
-      },
+      where: {and: [{tenantName: credentials.tenantName}, {databaseName: credentials.databaseName}]}
     });
     if (!foundTenant) {
       throw new HttpErrors.NotFound('Tenant not found');
@@ -73,4 +70,6 @@ export class MyUserService implements UserService<User, Credentials> {
       databaseName: user.databaseName,
     };
   }
+
+
 }
