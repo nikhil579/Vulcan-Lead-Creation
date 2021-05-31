@@ -59,10 +59,7 @@ export class TenantController {
     tenant: Omit<Tenant, 'id'>,
   ): Promise<Tenant> {
     const uniqueTenant = await this.tenantRepository.findOne({
-      where: {
-        tenantName: tenant.tenantName,
-        databaseName: tenant.databaseName,
-      },
+      where: {or: [{tenantName: tenant.tenantName}, {databaseName: tenant.databaseName}]}
     });
     if (uniqueTenant) {
       throw new HttpErrors.NotFound('Tenant already exists in database');
